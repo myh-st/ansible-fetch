@@ -1,7 +1,7 @@
 ---
   - hosts: all
     # become: yes
-    # become_user: myh
+    # become_user: testuser
     gather_facts: no
     tasks:
       - name: fetch /etc/hosts
