@@ -1,0 +1,17 @@
+---
+  - hosts: all
+    # become: yes
+    # become_user: myh
+    gather_facts: no
+    tasks:
+      - name: fetch /etc/hosts
+        fetch:
+          src: /etc/hosts
+          dest: result/hosts/{{ inventory_hostname }}/
+          flat: true
+
+      - name: fetch /etc/resolv.conf
+        fetch:
+          src: /etc/resolv.conf
+          dest: result/resolv/{{ inventory_hostname }}/
+          flat: true
