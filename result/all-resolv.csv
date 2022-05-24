@@ -1,0 +1,3 @@
+Hostname,nameserver,configNS
+rhel-client,nameserver,192.168.170.2
+testmerge,nameserver,192.168.170.2

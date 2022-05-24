@@ -1,0 +1,5 @@
+Hostname,IP,configHosts
+rhel-client,192.168.170.128,rhel-client
+rhel-client,192.168.170.134,ansible
+testmerge,192.168.170.128,testmerge
+testmerge,192.168.170.134,ansible
