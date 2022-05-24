@@ -9,9 +9,6 @@
     ├── inventory
     ├── README.md
     └── result
-        ├── hosts
-        │   └── rhel-client
-        │       └── hosts
-        └── resolv
-            └── rhel-client
+            └── rhel-client
+                └── hosts
                 └── resolv.conf
