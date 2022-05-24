@@ -15,3 +15,60 @@
           src: /etc/resolv.conf
           dest: result/{{ inventory_hostname }}/
           flat: true
+
+      - name: remove localhost in hosts file
+        lineinfile:
+          path: result/{{ inventory_hostname }}/hosts
+          state: absent
+          regexp: '^127\.0\.0\.1'
+        delegate_to: localhost
+
+      - name: remove ::1 in hosts file
+        lineinfile:
+          path: result/{{ inventory_hostname }}/hosts
+          state: absent
+          regexp: '^::1'
+        delegate_to: localhost
+
+      - name: remove comment in hosts file
+        lineinfile:
+          path: result/{{ inventory_hostname }}/hosts
+          state: absent
+          regexp: '^#'
+        delegate_to: localhost
+
+      - name: remove comment in resolv.conf
+        lineinfile:
+          path: result/{{ inventory_hostname }}/resolv.conf
+          state: absent
+          regexp: '^#'
+        delegate_to: localhost
+
+      - name: remove search in resolv.conf
+        lineinfile:
+          path: result/{{ inventory_hostname }}/resolv.conf
+          state: absent
+          regexp: '^search'
+        delegate_to: localhost
+
+      - name: Append hostname to hosts
+        shell: |
+          sed -i s/^/{{ inventory_hostname }},/ result/{{ inventory_hostname }}/hosts
+          sed -i s/^/{{ inventory_hostname }},/ result/{{ inventory_hostname }}/resolv.conf         
+        delegate_to: localhost
+
+      - name: insert culumn to resolv.conf
+        lineinfile:
+          path: result/{{ inventory_hostname }}/resolv.conf
+          insertbefore: BOF
+          line : Hostname Nameserver dnsIP
+        delegate_to: localhost
+
+      - name: insert culumn to hosts file
+        lineinfile:
+          path: result/{{ inventory_hostname }}/hosts
+          insertbefore: BOF
+          line : Hostname IP configHosts
+        delegate_to: localhost
+
+          
