@@ -37,6 +37,20 @@
           regexp: '^#'
         delegate_to: localhost
 
+      - name: remove empty lines in hosts file
+        lineinfile:
+          path: result/{{ inventory_hostname }}/hosts
+          state: absent
+          regexp: '^(?:[\t ]*(?:\r?\n|\r))+'
+        delegate_to: localhost
+
+      - name: remove empty lines in resolv.conf file
+        lineinfile:
+          path: result/{{ inventory_hostname }}/resolv.conf
+          state: absent
+          regexp: '^(?:[\t ]*(?:\r?\n|\r))+'
+        delegate_to: localhost
+
       - name: remove comment in resolv.conf
         lineinfile:
           path: result/{{ inventory_hostname }}/resolv.conf
@@ -53,29 +67,29 @@
 
       - name: Append hostname to hosts
         shell: |
-          sed -i s/^/{{ inventory_hostname }}\ / result/{{ inventory_hostname }}/hosts
-          sed -i s/^/{{ inventory_hostname }}\ / result/{{ inventory_hostname }}/resolv.conf         
+          sed -i s/^/{{ inventory_hostname }},/ result/{{ inventory_hostname }}/hosts
+          sed -i s/^/{{ inventory_hostname }}\ / result/{{ inventory_hostname }}/resolv.conf
         delegate_to: localhost
 
       - name: Merge multiple hosts files into one single file
         shell: |
           find . -name "hosts" | xargs cat > all-hosts.csv
         args:
-          chdir: result/        
+          chdir: result/
         delegate_to: localhost
 
       - name: insert culumn to all-hosts.csv
         lineinfile:
           path: result/all-hosts.csv
           insertbefore: BOF
-          line : Hostname hostsIP hostsNS
+          line : Hostname,hostsIP,hostsNS
         delegate_to: localhost
 
       - name: Merge multiple resolv files into one single file
         shell: |
           find . -name "resolv.conf" | xargs cat > all-resolv.csv
         args:
-          chdir: result/        
+          chdir: result/
         delegate_to: localhost
 
       - name: insert culumn to all-resolv.csv
@@ -96,13 +110,18 @@
         lineinfile:
           path: result/{{ inventory_hostname }}/hosts
           insertbefore: BOF
-          line : Hostname hostsIP hostsNS
+          line : Hostname,hostsIP,hostsNS
         delegate_to: localhost
 
-      - name: Replace space with comma (,)
+      - name: Replace space with comma (,) in resolv files
         shell: |
-          sed -i 's/\ /\,/g' result/{{ inventory_hostname }}/hosts
-          sed -i 's/\ /\,/g' result/{{ inventory_hostname }}/resolv.conf   
-          sed -i 's/\ /\,/g' result/all-hosts.csv
+          sed -i 's/\ /\,/g' result/{{ inventory_hostname }}/resolv.conf
           sed -i 's/\ /\,/g' result/all-resolv.csv
-        delegate_to: localhost          
+        delegate_to: localhost
+
+      - name: Replace space with comma (,) in hosts files
+        shell: |
+          sed -E -i 's/[0-9]{1,3}(\.[0-9]{1,3}){3}/ &,/g' result/{{ inventory_hostname }}/hosts
+          sed -E -i 's/[0-9]{1,3}(\.[0-9]{1,3}){3}/ &,/g' result/all-hosts.csv
+        delegate_to: localhost
+
