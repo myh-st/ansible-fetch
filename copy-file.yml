@@ -117,11 +117,13 @@
         shell: |
           sed -i 's/\ /\,/g' result/{{ inventory_hostname }}/resolv.conf
           sed -i 's/\ /\,/g' result/all-resolv.csv
+        run_once: True
         delegate_to: localhost
 
       - name: Replace space with comma (,) in hosts files
         shell: |
           sed -E -i 's/[0-9]{1,3}(\.[0-9]{1,3}){3}/ &,/g' result/{{ inventory_hostname }}/hosts
           sed -E -i 's/[0-9]{1,3}(\.[0-9]{1,3}){3}/ &,/g' result/all-hosts.csv
+        run_once: True
         delegate_to: localhost
 
