@@ -65,6 +65,36 @@
           regexp: '^search'
         delegate_to: localhost
 
+      - name: Check resolv.conf file
+        stat:
+          path: result/{{ inventory_hostname }}/resolv.conf
+        register: check_resolv
+        delegate_to: localhost
+
+      - name: Check hosts file
+        stat:
+          path: result/{{ inventory_hostname }}/hosts
+        register: check_hosts
+        delegate_to: localhost
+
+      - name: insert data to result/{{ inventory_hostname }}/resolv.conf
+        lineinfile:
+          path: result/{{ inventory_hostname }}/resolv.conf
+          insertbefore: BOF
+          line : "NO_nameserver,Found"
+        when:
+          - check_resolv.stat.size == 0
+        delegate_to: localhost
+
+      - name: insert data to result/{{ inventory_hostname }}/hosts
+        lineinfile:
+          path: result/{{ inventory_hostname }}/hosts
+          insertbefore: BOF
+          line : "NO hosts,Found"
+        when:
+          - check_hosts.stat.size == 0
+        delegate_to: localhost
+
       - name: Append hostname to hosts
         shell: |
           sed -i s/^/{{ inventory_hostname }},/ result/{{ inventory_hostname }}/hosts
@@ -126,4 +156,3 @@
           sed -E -i 's/[0-9]{1,3}(\.[0-9]{1,3}){3}/ &,/g' result/all-hosts.csv
         run_once: True
         delegate_to: localhost
-
